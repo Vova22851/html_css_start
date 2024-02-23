@@ -1,12 +1,37 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Сфери з випадковим кольором та розміром</title>
 </head>
 <body>
-    Hello, world!
-    <h1>Hello, all</h1>
+  <canvas id="canvas" width="600" height="600" onclick="onCanvasClick(event)"></canvas>
+  <script>
+    const canvas = document.getElementById('canvas');
+    const ctx = canvas.getContext('2d');
+
+    function onCanvasClick(e) {
+      // Генерація випадкового кольору
+      const randomColor = `#${Math.floor(Math.random() * 16777215).toString(16)}`;
+      // Генерація випадкового розміру в діапазоні 20-100
+      const randomRadius = Math.floor(Math.random() * 81) + 20;
+
+      // Збереження контексту 2D-рендерингу
+      ctx.save();
+
+      // Трансформація контексту для малювання сфери
+      ctx.translate(e.clientX, e.clientY);
+
+      // Малювання сфери
+      ctx.beginPath();
+      ctx.arc(0, 0, randomRadius, 0, Math.PI * 2);
+      ctx.fillStyle = randomColor;
+      ctx.fill();
+
+      // Відновлення контексту 2D-рендерингу
+      ctx.restore();
+    }
+  </script>
 </body>
 </html>
