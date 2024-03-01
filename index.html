@@ -8,6 +8,30 @@
 <body>
   <canvas id="canvas" width="600" height="600" onclick="onCanvasClick(event)"></canvas>
   <script>
+    // const canvas = document.getElementById('canvas');
+    // const ctx = canvas.getContext('2d');
+
+    // function onCanvasClick(e) {
+    //   // Генерація випадкового кольору
+    //   const randomColor = `#${Math.floor(Math.random() * 16777215).toString(16)}`;
+    //   // Генерація випадкового розміру в діапазоні 20-100
+    //   const randomRadius = Math.floor(Math.random() * 81) + 20;
+
+    //   // Збереження контексту 2D-рендерингу
+    //   ctx.save();
+
+    //   // Трансформація контексту для малювання сфери
+    //   ctx.translate(e.clientX, e.clientY);
+
+    //   // Малювання сфери
+    //   ctx.beginPath();
+    //   ctx.arc(0, 0, randomRadius, 0, Math.PI * 2);
+    //   ctx.fillStyle = randomColor;
+    //   ctx.fill();
+
+    //   // Відновлення контексту 2D-рендерингу
+    //   ctx.restore();
+    // }
     const canvas = document.getElementById('canvas');
     const ctx = canvas.getContext('2d');
 
@@ -20,12 +44,18 @@
       // Збереження контексту 2D-рендерингу
       ctx.save();
 
-      // Трансформація контексту для малювання сфери
+      // Трансформація контексту для малювання шестикутника
       ctx.translate(e.clientX, e.clientY);
 
-      // Малювання сфери
+      // Малювання шестикутника
       ctx.beginPath();
-      ctx.arc(0, 0, randomRadius, 0, Math.PI * 2);
+      for (let i = 0; i < 6; i++) {
+        const angle = (2 * Math.PI * i) / 6;
+        const dx = randomRadius * Math.cos(angle);
+        const dy = randomRadius * Math.sin(angle);
+        ctx.lineTo(dx, dy);
+      }
+      ctx.closePath();
       ctx.fillStyle = randomColor;
       ctx.fill();
 
