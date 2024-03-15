@@ -3,64 +3,112 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Сфери з випадковим кольором та розміром</title>
+  <title>Переміщення фігур по Canvas</title>
 </head>
 <body>
-  <canvas id="canvas" width="600" height="600" onclick="onCanvasClick(event)"></canvas>
+  <canvas id="canvas" width="600" height="600"></canvas>
+
   <script>
-    // const canvas = document.getElementById('canvas');
-    // const ctx = canvas.getContext('2d');
-
-    // function onCanvasClick(e) {
-    //   // Генерація випадкового кольору
-    //   const randomColor = `#${Math.floor(Math.random() * 16777215).toString(16)}`;
-    //   // Генерація випадкового розміру в діапазоні 20-100
-    //   const randomRadius = Math.floor(Math.random() * 81) + 20;
-
-    //   // Збереження контексту 2D-рендерингу
-    //   ctx.save();
-
-    //   // Трансформація контексту для малювання сфери
-    //   ctx.translate(e.clientX, e.clientY);
-
-    //   // Малювання сфери
-    //   ctx.beginPath();
-    //   ctx.arc(0, 0, randomRadius, 0, Math.PI * 2);
-    //   ctx.fillStyle = randomColor;
-    //   ctx.fill();
-
-    //   // Відновлення контексту 2D-рендерингу
-    //   ctx.restore();
-    // }
     const canvas = document.getElementById('canvas');
     const ctx = canvas.getContext('2d');
 
-    function onCanvasClick(e) {
-      // Генерація випадкового кольору
-      const randomColor = `#${Math.floor(Math.random() * 16777215).toString(16)}`;
-      // Генерація випадкового розміру в діапазоні 20-100
-      const randomRadius = Math.floor(Math.random() * 81) + 20;
+    // Змінні
+    let figures = [];
+    let isDrawing = false;
 
-      // Збереження контексту 2D-рендерингу
-      ctx.save();
+    // Функція для генерації випадкового кольору
+    function getRandomColor() {
+      return `#${Math.floor(Math.random() * 16777215).toString(16)}`;
+    }
 
-      // Трансформація контексту для малювання шестикутника
-      ctx.translate(e.clientX, e.clientY);
+    // Функція для генерації випадкового розміру
+    function getRandomRadius() {
+      return Math.floor(Math.random() * 81) + 20;
+    }
 
-      // Малювання шестикутника
+    // Функція для малювання сфери
+    function drawSphere(x, y, radius) {
       ctx.beginPath();
-      for (let i = 0; i < 6; i++) {
-        const angle = (2 * Math.PI * i) / 6;
-        const dx = randomRadius * Math.cos(angle);
-        const dy = randomRadius * Math.sin(angle);
-        ctx.lineTo(dx, dy);
-      }
-      ctx.closePath();
-      ctx.fillStyle = randomColor;
+      ctx.arc(x, y, radius, 0, Math.PI * 2);
+      ctx.fillStyle = getRandomColor();
       ctx.fill();
+    }
 
-      // Відновлення контексту 2D-рендерингу
-      ctx.restore();
+    // Функція для оновлення кадру
+    function update() {
+      if (isDrawing) {
+        const x = event.clientX;
+        const y = event.clientY;
+        figures.push({ x, y, radius: getRandomRadius() });
+      }
+
+      // Очистка холсту
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      // Малювання фігур
+      for (const figure of figures) {
+        if (figure.isMoving) {
+          figure.x += figure.vx;
+          figure.y += figure.vy;
+        }
+
+        // Перевірка виходу за межі канвасу
+        if (figure.x < 0 || figure.x > canvas.width) {
+          figure.vx = -figure.vx;
+        }
+        if (figure.y < 0 || figure.y > canvas.height) {
+          figure.vy = -figure.vy;
+        }
+
+        drawSphere(figure.x, figure.y, figure.radius);
+      }
+
+      requestAnimationFrame(update);
+    }
+
+    // Події
+    canvas.addEventListener('mousedown', () => {
+      isDrawing = true;
+    });
+
+    canvas.addEventListener('mouseup', () => {
+      isDrawing = false;
+    });
+
+    canvas.addEventListener('mousemove', (e) => {
+      const x = e.clientX;
+      const y = e.clientY;
+
+      for (const figure of figures) {
+        if (figure.isMoving) {
+          const dx = x - figure.x;
+          const dy = y - figure.y;
+          const distance = Math.sqrt(dx * dx + dy * dy);
+          if (distance < figure.radius) {
+            figure.vx = dx / distance * figure.speed;
+            figure.vy = dy / distance * figure.speed;
+          }
+        }
+      }
+    });
+
+    // Запуск оновлення кадру
+    requestAnimationFrame(update);
+
+    // Додаткові змінні
+    for (const figure of figures) {
+      figure.isMoving = false;
+      figure.speed = 1;
+    }
+
+    // Функція для початку переміщення фігури
+    function startMovingFigure(figure) {
+      figure.isMoving = true;
+    }
+
+    // Функція для зупинки переміщення фігури
+    function stopMovingFigure(figure) {
+      figure.isMoving = false;
     }
   </script>
 </body>
